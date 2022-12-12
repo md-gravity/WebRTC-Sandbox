@@ -1,6 +1,14 @@
-function createModerator({ room, rtc }) {
+import {createRoom} from "./room";
+
+function createModerator({ rtc }) {
+  let room
   return {
-    openRoom({ onMemberLeave, onMemberEnter }) {
+    async createRoom({ userUid, roomUid }) {
+      room = await createRoom({ userUid, roomUid });
+    },
+    async joinRoom({ onMemberLeave, onMemberEnter }) {
+      await room.join();
+
       room.onMemberJoin(handleMemberJoined);
       room.onMessage(handlePeerMessage);
       room.onMemberLeave(() => {

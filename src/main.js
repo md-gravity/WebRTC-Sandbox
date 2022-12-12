@@ -1,14 +1,8 @@
 import { createStream, createVideo } from "./media";
 import { createRTC } from "./rtc";
-import { createRoom } from "./room";
 import { createModerator } from "./moderator";
 
 async function main() {
-  const userUid = String(Math.floor(Math.random() * 10000));
-  const roomUid = "main";
-  const room = await createRoom({ userUid, roomUid });
-  await room.join();
-
   const rtc = await createRTC();
 
   const localStream = await createStream();
@@ -21,8 +15,12 @@ async function main() {
     remoteStream.addTracks(remoteTracks);
   });
 
-  const moderator = createModerator({ rtc, room });
-  moderator.openRoom({
+  const userUid = String(Math.floor(Math.random() * 10000));
+  const roomUid = "main";
+
+  const moderator = createModerator({ rtc });
+  await moderator.createRoom({ userUid, roomUid })
+  await moderator.joinRoom({
     onMemberLeave: () => {
       remoteVideo.hide();
     },
